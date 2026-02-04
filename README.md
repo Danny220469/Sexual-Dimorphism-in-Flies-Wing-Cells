@@ -33,7 +33,7 @@ The project investigates **Sexual Dimorphism** and **Geographic Variation** by p
 
 To run these scripts, you will need the following libraries installed.
 
-### R Packages
+### R & Python Packages
 ```r
 install.packages(c("Momocs", "imager", "tidyverse", "foreach", "doParallel", "MASS", "ggplot2", "scales"))
 
