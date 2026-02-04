@@ -1,7 +1,7 @@
 # Sexual Dimorphism in Fly Wing Cells
 
 ## 🧬 Geometric Morphometrics Pipeline
-This repository contains a complete bioinformatics pipeline for analyzing wing shape variations in Diptera species (e.g., *Calliphora vicina*, *Chrysomya albiceps*) using **Elliptic Fourier Descriptors (EFD)**.
+This repository contains a complete pipeline for analyzing wing shape variations in Diptera species (e.g., *Calliphora vicina*, *Chrysomya albiceps*) using **Elliptic Fourier Descriptors (EFD)**.
 
 The project investigates **Sexual Dimorphism** and **Geographic Variation** by processing wing images, generating shape coefficients, performing statistical tests, and creating interactive 3D visualizations.
 
@@ -36,3 +36,7 @@ To run these scripts, you will need the following libraries installed.
 ### R Packages
 ```r
 install.packages(c("Momocs", "imager", "tidyverse", "foreach", "doParallel", "MASS", "ggplot2", "scales"))
+
+### Python Packages
+```r
+install.packages(c("pandas", "numpy", "matplotlib", "plotly"))
