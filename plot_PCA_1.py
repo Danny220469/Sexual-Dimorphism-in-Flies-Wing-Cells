@@ -47,7 +47,6 @@ else:
     df['species_display'] = "Unknown"
 
 # Create Grouping: Species + (Locality)
-# We keep this plain text for sorting and coloring
 df['species_locality'] = df['species_display'] + " (" + df['locality'].astype(str) + ")"
 df = df.sort_values(by=['species_locality'])
 
@@ -57,33 +56,22 @@ palette = px.colors.qualitative.Dark24 + px.colors.qualitative.Alphabet
 color_map = {group: palette[i % len(palette)] for i, group in enumerate(unique_groups)}
 
 # ==============================================================================
-# 4. JAVASCRIPT & CSS (Lato Font + Italic Legend + Interaction)
+# 4. JAVASCRIPT & CSS
 # ==============================================================================
 custom_html_block = """
 <style>
-    /* 1. Import Lato (Regular + Italic + Bold) */
     @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap');
     
-    /* 2. GLOBAL FONT OVERRIDE */
-    /* Target everything: body, plot text, legend text, titles, tooltips */
     body, .js-plotly-plot, .plot-container, text, .title, .xtitle, .ytitle, .ztitle, .hovertext {
         font-family: 'Lato', sans-serif !important;
     }
-
-    /* 3. SPECIFIC LEGEND FIX */
-    /* This forces the SVG text elements in the legend to use Lato */
     .legendtext {
         font-family: 'Lato', sans-serif !important;
         font-size: 13px !important;
     }
-    
-    /* 4. Formatting Tags */
     i, em { font-family: 'Lato', sans-serif !important; font-style: italic; }
     b, strong { font-family: 'Lato', sans-serif !important; font-weight: bold; }
-    
     .plotly-graph-div { position: relative !important; }
-    
-    /* 5. Hide default hover tooltip */
     .hovertext { display: none !important; }
 </style>
 
@@ -119,7 +107,6 @@ custom_html_block = """
 
             for (var i = 0; i < plot_div.data.length; i++) {
                 indices.push(i);
-                // Highlight if trace belongs to the same legendgroup ID
                 if (plot_div.data[i].legendgroup === targetGroup) {
                     opacities.push(0.9);
                 } else {
@@ -179,8 +166,6 @@ def generate_plot(sub_df, cell_type_name, output_filename):
     print(f"Generating plot for: {cell_type_name}...")
     sub_df['sex'] = sub_df['sex'].astype(str).str.capitalize()
 
-    # Create Scatter Plot
-    # Note: We use the plain 'species_locality' for color mapping to ensure consistency
     fig = px.scatter_3d(
         sub_df,
         x='PC1', y='PC2', z='PC3',
@@ -188,38 +173,32 @@ def generate_plot(sub_df, cell_type_name, output_filename):
         symbol='sex',
         hover_name='image_id',
         color_discrete_map=color_map,
-        symbol_map={'Male': 'circle', 'Female': 'x'},
+        symbol_map={'Male': 'circle', 'Female': 'cross'},
         custom_data=['species_display', 'sex', 'locality']
     )
 
-    # --- TRACE CONFIGURATION (Italics & Linking) ---
+    # --- TRACE CONFIGURATION ---
     for trace in fig.data:
-        # Extract metadata
         species_name = trace.customdata[0][0]
         locality_name = trace.customdata[0][2]
         
-        # 1. Plain ID for JS Logic (Must match between Male/Female)
-        # We strip HTML tags here to be safe for the internal ID
         group_id_plain = f"{species_name} ({locality_name})"
-        
-        # 2. HTML Name for Legend Display (Italics applied here)
         legend_label_html = f"<i>{species_name}</i> ({locality_name})"
 
-        # Apply settings
-        trace.legendgroup = group_id_plain  # Link traces by this ID
-        trace.name = legend_label_html      # Show this HTML in legend
+        trace.legendgroup = group_id_plain
+        trace.name = legend_label_html
+        trace.hoverinfo = 'none'
         
-        # Interaction settings
-        trace.hoverinfo = 'none' # Enable event, hide text box
-        
-        # Visibility settings
         is_male = (trace.marker.symbol == 'circle')
+        
+        # --- SIZE ADJUSTMENT HERE ---
         if is_male:
-            trace.showlegend = True  # Show Male entry in legend
+            trace.showlegend = True
+            trace.marker.size = 7  # Standard size for Circles
         else:
-            trace.showlegend = False # Hide Female entry (linked via legendgroup)
+            trace.showlegend = False
+            trace.marker.size = 10 # Larger size for Crosses
             
-        trace.marker.size = 6 if is_male else 5
         trace.marker.opacity = 0.8
         trace.marker.line = dict(width=0.5, color='Black' if is_male else 'DarkSlateGrey')
 
@@ -238,12 +217,11 @@ def generate_plot(sub_df, cell_type_name, output_filename):
         ),
         legend=dict(
             title_text="<b>Population</b><br><span style='font-size:12px'>(Male ●, Female ×)</span>",
-            # We explicitly set the font here, though the CSS will double-force it
             font=dict(family="Lato", size=13),
             itemsizing='constant',
             yanchor="top", y=0.9, xanchor="left", x=1.02
         ),
-        font=dict(family="Lato"), # Global font fallback
+        font=dict(family="Lato"),
         margin=dict(l=0, r=0, b=0, t=50)
     )
 
