@@ -37,6 +37,4 @@ To run these scripts, you will need the following libraries installed.
 ```r
 install.packages(c("Momocs", "imager", "tidyverse", "foreach", "doParallel", "MASS", "ggplot2", "scales"))
 
-### Python Packages
-```r
 install.packages(c("pandas", "numpy", "matplotlib", "plotly"))
