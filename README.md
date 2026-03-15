@@ -32,7 +32,7 @@ The project investigates **Sexual Dimorphism** and **Geographic Variation** by p
 ### 4. Visualization (Python)
 * **`contour_check.py`**:  
     Reconstructs average wing shapes from EFD coefficients to visualize Mean Male vs. Mean Female outlines.
-* **`plot_PCA_1.py`**:  
+* **`plot_PCA_1_test.py`**:  
     Generates high-quality, interactive **3D Scatter Plots** using Plotly. Features custom styling (Lato font), grouping by population, and detailed hover metadata.
 
 ---
